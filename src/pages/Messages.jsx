@@ -307,8 +307,31 @@ const Messages = () => {
   }
 
   const simulateIncomingMessage = () => {
+    // Check if conversations and mockUsers arrays exist and have content
+    if (!conversations || conversations.length === 0) {
+      console.warn('No conversations available for simulation')
+      return
+    }
+    
+    if (!mockUsers || mockUsers.length === 0) {
+      console.warn('No users available for simulation')
+      return
+    }
+
     const randomConv = conversations[Math.floor(Math.random() * conversations.length)]
     const randomUser = mockUsers[Math.floor(Math.random() * mockUsers.length)]
+    
+    // Verify the selected objects have required properties
+    if (!randomConv || !randomConv.id) {
+      console.warn('Invalid conversation selected for simulation')
+      return
+    }
+    
+    if (!randomUser || !randomUser.id || !randomUser.name) {
+      console.warn('Invalid user selected for simulation')
+      return
+    }
+    
     const randomMessages = [
       'Hey! What\'s up?',
       'Just saw your latest post, amazing!',
@@ -342,6 +365,7 @@ const Messages = () => {
 
     toast.info(`New message from ${randomUser.name}`)
   }
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

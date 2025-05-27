@@ -18,6 +18,8 @@ const Home = () => {
     { id: 3, type: 'follow', user: 'Charlie Dev', content: 'started following you', read: true }
   ])
 
+  const unreadNotifications = notifications.filter(n => !n.read).length
+
   const navigate = useNavigate()
 
   // Mock users data for search suggestions
@@ -85,8 +87,6 @@ const Home = () => {
       {/* Background Elements */}
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-  const unreadNotifications = notifications.filter(n => !n.read).length
-
 
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl animate-float"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-secondary/10 rounded-full blur-xl animate-pulse-soft"></div>

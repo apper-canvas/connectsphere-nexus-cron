@@ -7,6 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: {
+          DEFAULT: '#ffffff',
+          dark: '#0f172a'
+        },
+        foreground: {
+          DEFAULT: '#0f172a',
+          dark: '#f8fafc'
+        },
+        border: {
+          DEFAULT: '#e2e8f0',
+          dark: '#334155'
+        },
         primary: {
           DEFAULT: '#6366f1',
           light: '#818cf8',
@@ -30,6 +42,7 @@ export default {
           800: '#1e293b',
           900: '#0f172a'
         }
+      },
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],

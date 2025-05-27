@@ -499,6 +499,7 @@ const MainFeature = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
             className="space-y-6 sm:space-y-8"
+          >
             {posts.filter(post => !hiddenPosts.has(post.id)).map((post) => (
 
             {posts.map((post) => (
@@ -598,6 +599,11 @@ const MainFeature = () => {
                               {followedUsers.has(post.author.username) ? 'Unfollow' : 'Follow'} {post.author.name}
                             </span>
                           </button>
+                        )}
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
 
                       </motion.div>
                     )}

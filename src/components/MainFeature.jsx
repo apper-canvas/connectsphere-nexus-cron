@@ -279,7 +279,6 @@ const MainFeature = () => {
       setSelectedImage(null)
       setImagePreview("")
       setIsPosting(false)
-      toast.success("Post shared successfully!")
     }, 1500)
   }
 
@@ -305,20 +304,6 @@ const MainFeature = () => {
     // Simulate API call
     setTimeout(() => {
       setIsLiking(prev => ({ ...prev, [postId]: false }))
-      // Create notification for post author
-      if (!wasLiked) {
-        // Simulate creating a notification (in real app, this would be an API call)
-        setTimeout(() => {
-          toast.info('Notification sent to post author about your like!')
-        }, 1000)
-      }
-
-      if (!wasLiked) {
-        toast.success("Post liked! ❤️")
-      } else {
-        toast.info("Like removed")
-      }
-    }, 500)
   }
 
   const toggleComments = (postId) => {
@@ -365,15 +350,6 @@ const MainFeature = () => {
       ))
       
       
-      // Create notification for post author about new comment
-      setTimeout(() => {
-        toast.info('Notification sent to post author about your comment!')
-      }, 1200)
-
-      setNewComment(prev => ({ ...prev, [postId]: "" }))
-      setIsCommenting(prev => ({ ...prev, [postId]: false }))
-      toast.success("Comment added successfully!")
-    }, 800)
   }
 
   const handleLikeComment = (postId, commentId) => {
@@ -389,7 +365,6 @@ const MainFeature = () => {
           }
         : post
     ))
-    toast.success("Comment liked!")
   }
 
   const toggleShareDialog = (postId) => {
@@ -412,33 +387,6 @@ const MainFeature = () => {
       switch (platform) {
         case 'copy':
           await navigator.clipboard.writeText(shareUrl)
-          toast.success("Link copied to clipboard!")
-          break
-        case 'facebook':
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank')
-          toast.success("Opening Facebook...")
-          break
-        case 'twitter':
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank')
-          toast.success("Opening Twitter...")
-          break
-        case 'whatsapp':
-          window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank')
-          toast.success("Opening WhatsApp...")
-          break
-        case 'email':
-          window.open(`mailto:?subject=${encodeURIComponent('Check out this post')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`, '_blank')
-          toast.success("Opening email client...")
-          break
-        default:
-          // General share - increment counter
-          setPosts(posts.map(p => 
-            p.id === postId 
-              ? { ...p, shares: (p.shares || 0) + 1 }
-              : p
-          ))
-          toast.success("Post shared!")
-      }
       
       setShowShareDialog(prev => ({ ...prev, [postId]: false }))
     } catch (error) {
@@ -463,7 +411,6 @@ const MainFeature = () => {
 
   const handleEditPost = (postId) => {
     const post = posts.find(p => p.id === postId)
-    toast.info(`Edit post: "${post.content.substring(0, 50)}..."`)
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
 
@@ -476,12 +423,10 @@ const MainFeature = () => {
   }
 
   const handleReportPost = (postId) => {
-    toast.warning('Post reported. We\'ll review it shortly.')
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
 
   const handleSavePost = (postId) => {
-    toast.success('Post saved to your collection!')
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
 
@@ -492,12 +437,6 @@ const MainFeature = () => {
       const newSet = new Set(prev)
       if (isCurrentlyFollowed) {
         newSet.delete(userId)
-        toast.info(`Unfollowed ${userName}`)
-      } else {
-        newSet.add(userId)
-        toast.success(`Now following ${userName}!`)
-      }
-      return newSet
     })
     
     setShowOptionsMenu(prev => ({ ...prev, [userId]: false }))
@@ -505,7 +444,6 @@ const MainFeature = () => {
 
   const handleHidePost = (postId) => {
     setHiddenPosts(prev => new Set(prev).add(postId))
-    toast.success('Post hidden from your feed')
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
   const handleLoadMore = async () => {
@@ -525,13 +463,6 @@ const MainFeature = () => {
       if (newPosts.length > 0) {
         setAdditionalPosts(prev => [...prev, ...newPosts])
         setPosts(prev => [...prev, ...newPosts])
-        toast.success(`Loaded ${newPosts.length} more posts!`)
-        
-        // Check if there are more posts to load
-        if (endIndex >= morePostsData.length) {
-          setHasMorePosts(false)
-          toast.info('You\'ve reached the end of your feed!')
-        }
       } else {
         setHasMorePosts(false)
         toast.info('No more posts to load')

@@ -132,6 +132,7 @@ const Home = () => {
 
 
 
+
   const handleAdvancedSearch = () => {
     navigate('/search')
     setSearchQuery('')

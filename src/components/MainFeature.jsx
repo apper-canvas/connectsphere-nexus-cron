@@ -84,6 +84,9 @@ const MainFeature = () => {
   const [newComment, setNewComment] = useState({})
   const [isCommenting, setIsCommenting] = useState({})
   const [showShareDialog, setShowShareDialog] = useState({})
+  const [followedUsers, setFollowedUsers] = useState(new Set())
+  const [hiddenPosts, setHiddenPosts] = useState(new Set())
+
   const [showOptionsMenu, setShowOptionsMenu] = useState({})
 
   const [isLiking, setIsLiking] = useState({})
@@ -336,6 +339,31 @@ const MainFeature = () => {
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
 
+  const handleFollowUser = (userId, userName) => {
+    const isCurrentlyFollowed = followedUsers.has(userId)
+    
+    setFollowedUsers(prev => {
+      const newSet = new Set(prev)
+      if (isCurrentlyFollowed) {
+        newSet.delete(userId)
+        toast.info(`Unfollowed ${userName}`)
+      } else {
+        newSet.add(userId)
+        toast.success(`Now following ${userName}!`)
+      }
+      return newSet
+    })
+    
+    setShowOptionsMenu(prev => ({ ...prev, [userId]: false }))
+  }
+
+  const handleHidePost = (postId) => {
+    setHiddenPosts(prev => new Set(prev).add(postId))
+    toast.success('Post hidden from your feed')
+    setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
+  }
+
+
 
 
 
@@ -471,7 +499,8 @@ const MainFeature = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
             className="space-y-6 sm:space-y-8"
-          >
+            {posts.filter(post => !hiddenPosts.has(post.id)).map((post) => (
+
             {posts.map((post) => (
               <motion.div
                 key={post.id}
@@ -545,6 +574,30 @@ const MainFeature = () => {
                             </button>
                           </>
                         )}
+                        
+                        {/* Common options for all posts */}
+                        <button
+                          onClick={() => handleHidePost(post.id)}
+                          className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                        >
+                          <ApperIcon name="EyeOff" className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm text-surface-700 dark:text-surface-300">Hide Post</span>
+                        </button>
+                        
+                        {/* Follow option for posts from other users */}
+                        {post.author.username !== currentUser.username && (
+                          <button
+                            onClick={() => handleFollowUser(post.author.username, post.author.name)}
+                            className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                          >
+                            <ApperIcon 
+                              name={followedUsers.has(post.author.username) ? "UserMinus" : "UserPlus"} 
+                              className={`w-4 h-4 ${followedUsers.has(post.author.username) ? 'text-red-500' : 'text-primary'}`} 
+                            />
+                            <span className="text-sm text-surface-700 dark:text-surface-300">
+                              {followedUsers.has(post.author.username) ? 'Unfollow' : 'Follow'} {post.author.name}
+                            </span>
+                          </button>
 
                       </motion.div>
                     )}

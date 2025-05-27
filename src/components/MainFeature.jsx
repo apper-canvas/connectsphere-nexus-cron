@@ -508,6 +508,43 @@ const MainFeature = () => {
     toast.success('Post hidden from your feed')
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMorePosts) return
+    
+    setIsLoadingMore(true)
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Simulate loading more posts
+      const startIndex = additionalPosts.length
+      const endIndex = Math.min(startIndex + 3, morePostsData.length)
+      const newPosts = morePostsData.slice(startIndex, endIndex)
+      
+      if (newPosts.length > 0) {
+        setAdditionalPosts(prev => [...prev, ...newPosts])
+        setPosts(prev => [...prev, ...newPosts])
+        toast.success(`Loaded ${newPosts.length} more posts!`)
+        
+        // Check if there are more posts to load
+        if (endIndex >= morePostsData.length) {
+          setHasMorePosts(false)
+          toast.info('You\'ve reached the end of your feed!')
+        }
+      } else {
+        setHasMorePosts(false)
+        toast.info('No more posts to load')
+      }
+    } catch (error) {
+      toast.error('Failed to load more posts. Please try again.')
+      console.error('Error loading more posts:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
+
 
 
 
@@ -608,42 +645,6 @@ const MainFeature = () => {
                   <span className="text-sm sm:text-base text-surface-600 dark:text-surface-400 hidden sm:inline">Emoji</span>
                 </button>
               </div>
-
-  const handleLoadMore = async () => {
-    if (isLoadingMore || !hasMorePosts) return
-    
-    setIsLoadingMore(true)
-    
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Simulate loading more posts
-      const startIndex = additionalPosts.length
-      const endIndex = Math.min(startIndex + 3, morePostsData.length)
-      const newPosts = morePostsData.slice(startIndex, endIndex)
-      
-      if (newPosts.length > 0) {
-        setAdditionalPosts(prev => [...prev, ...newPosts])
-        setPosts(prev => [...prev, ...newPosts])
-        toast.success(`Loaded ${newPosts.length} more posts!`)
-        
-        // Check if there are more posts to load
-        if (endIndex >= morePostsData.length) {
-          setHasMorePosts(false)
-          toast.info('You\'ve reached the end of your feed!')
-        }
-      } else {
-        setHasMorePosts(false)
-        toast.info('No more posts to load')
-      }
-    } catch (error) {
-      toast.error('Failed to load more posts. Please try again.')
-      console.error('Error loading more posts:', error)
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }
 
 
               <motion.button

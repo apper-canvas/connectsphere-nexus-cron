@@ -36,10 +36,6 @@ const Home = () => {
     setDarkMode(!darkMode)
   }
 
-  return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Elements */}
-
   // Search functionality
   const handleSearchChange = (e) => {
     const query = e.target.value
@@ -77,6 +73,10 @@ const Home = () => {
     navigate('/search')
     setShowSearchResults(false)
   }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Elements */}
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl animate-float"></div>

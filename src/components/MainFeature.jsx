@@ -85,6 +85,10 @@ const MainFeature = () => {
   const [isCommenting, setIsCommenting] = useState({})
   const [showShareDialog, setShowShareDialog] = useState({})
   const [followedUsers, setFollowedUsers] = useState(new Set())
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMorePosts, setHasMorePosts] = useState(true)
+  const [additionalPosts, setAdditionalPosts] = useState([])
+
   const [hiddenPosts, setHiddenPosts] = useState(new Set())
 
   const [showOptionsMenu, setShowOptionsMenu] = useState({})
@@ -97,6 +101,134 @@ const MainFeature = () => {
   const navigate = useNavigate()
 
   const fileInputRef = useRef(null)
+
+
+  // Additional posts for load more functionality
+  const morePostsData = [
+    {
+      id: 3,
+      author: {
+        name: "Emma Wilson",
+        username: "@emmaw",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+      },
+      content: "Working on an exciting new project! Can't wait to share more details soon 🚀 #innovation #tech",
+      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=500&h=300&fit=crop",
+      likes: 89,
+      comments: [
+        {
+          id: 4,
+          author: {
+            name: "Alex Rodriguez",
+            username: "@alexr",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "Sounds amazing! Looking forward to it",
+          timestamp: "30m ago",
+          likes: 2
+        }
+      ],
+      timestamp: "6h ago",
+      liked: false,
+      shares: 8
+    },
+    {
+      id: 4,
+      author: {
+        name: "Marcus Chen",
+        username: "@marcusc",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      },
+      content: "Amazing coffee and even better company today! Sometimes the best meetings happen over a simple cup of coffee ☕️",
+      image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500&h=300&fit=crop",
+      likes: 142,
+      comments: [
+        {
+          id: 5,
+          author: {
+            name: "Sarah Chen",
+            username: "@sarahc",
+            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "That place has the best coffee in town!",
+          timestamp: "2h ago",
+          likes: 5
+        }
+      ],
+      timestamp: "8h ago",
+      liked: true,
+      shares: 15
+    },
+    {
+      id: 5,
+      author: {
+        name: "Luna Rodriguez",
+        username: "@lunar",
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+      },
+      content: "Just finished reading an incredible book about space exploration. The universe is so vast and mysterious! 🌌📚",
+      image: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=500&h=300&fit=crop",
+      likes: 203,
+      comments: [
+        {
+          id: 6,
+          author: {
+            name: "David Kim",
+            username: "@davidk",
+            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "What book was it? I'm always looking for good space reads!",
+          timestamp: "1h ago",
+          likes: 4
+        }
+      ],
+      timestamp: "12h ago",
+      liked: false,
+      shares: 22
+    },
+    {
+      id: 6,
+      author: {
+        name: "James Parker",
+        username: "@jamesp",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+      },
+      content: "Morning workout complete! 💪 There's nothing like starting the day with some exercise to boost energy levels.",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=300&fit=crop",
+      likes: 67,
+      comments: [],
+      timestamp: "1d ago",
+      liked: false,
+      shares: 3
+    },
+    {
+      id: 7,
+      author: {
+        name: "Sofia Martinez",
+        username: "@sofiam",
+        avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face"
+      },
+      content: "Homemade pasta night! Nothing beats fresh ingredients and good company. Cooking is definitely my love language 🍝❤️",
+      image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&h=300&fit=crop",
+      likes: 128,
+      comments: [
+        {
+          id: 7,
+          author: {
+            name: "Maria Santos",
+            username: "@marias",
+            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "Recipe please! That looks absolutely delicious",
+          timestamp: "3h ago",
+          likes: 6
+        }
+      ],
+      timestamp: "1d ago",
+      liked: true,
+      shares: 11
+    }
+  ]
 
 
   const sampleImages = [
@@ -476,6 +608,43 @@ const MainFeature = () => {
                   <span className="text-sm sm:text-base text-surface-600 dark:text-surface-400 hidden sm:inline">Emoji</span>
                 </button>
               </div>
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMorePosts) return
+    
+    setIsLoadingMore(true)
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Simulate loading more posts
+      const startIndex = additionalPosts.length
+      const endIndex = Math.min(startIndex + 3, morePostsData.length)
+      const newPosts = morePostsData.slice(startIndex, endIndex)
+      
+      if (newPosts.length > 0) {
+        setAdditionalPosts(prev => [...prev, ...newPosts])
+        setPosts(prev => [...prev, ...newPosts])
+        toast.success(`Loaded ${newPosts.length} more posts!`)
+        
+        // Check if there are more posts to load
+        if (endIndex >= morePostsData.length) {
+          setHasMorePosts(false)
+          toast.info('You\'ve reached the end of your feed!')
+        }
+      } else {
+        setHasMorePosts(false)
+        toast.info('No more posts to load')
+      }
+    } catch (error) {
+      toast.error('Failed to load more posts. Please try again.')
+      console.error('Error loading more posts:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -870,10 +1039,32 @@ const MainFeature = () => {
               transition={{ delay: 0.5 }}
               className="text-center"
             >
-              <button className="px-6 sm:px-8 py-3 sm:py-4 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-xl sm:rounded-2xl font-medium transition-all duration-300 shadow-card hover:shadow-float">
-                <span className="text-sm sm:text-base">Load More Posts</span>
-              </button>
-            </motion.div>
+              <motion.button
+                whileHover={!isLoadingMore && hasMorePosts ? { scale: 1.02 } : {}}
+                whileTap={!isLoadingMore && hasMorePosts ? { scale: 0.98 } : {}}
+                onClick={handleLoadMore}
+                disabled={isLoadingMore || !hasMorePosts}
+                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium transition-all duration-300 shadow-card flex items-center space-x-3 ${
+                  isLoadingMore || !hasMorePosts
+                    ? "bg-surface-200 dark:bg-surface-700 text-surface-400 dark:text-surface-500 cursor-not-allowed"
+                    : "bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 hover:shadow-float"
+                }`}
+              >
+                {isLoadingMore && (
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                )}
+                <span className="text-sm sm:text-base">
+                  {isLoadingMore 
+                    ? "Loading Posts..." 
+                    : hasMorePosts 
+                      ? "Load More Posts" 
+                      : "No More Posts"
+                  }
+                </span>
+                {!isLoadingMore && hasMorePosts && (
+                  <ApperIcon name="ChevronDown" className="w-4 h-4 sm:w-5 sm:h-5" />
+                )}
+              </motion.button>
           </motion.div>
         )}
       </AnimatePresence>

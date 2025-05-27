@@ -15,9 +15,33 @@ const MainFeature = () => {
       content: "Just launched my new project! Excited to share it with the ConnectSphere community 🚀",
       image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=300&fit=crop",
       likes: 24,
-      comments: 8,
+      comments: [
+        {
+          id: 1,
+          author: {
+            name: "Alex Rodriguez",
+            username: "@alexr",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "Congratulations! This looks amazing 🎉",
+          timestamp: "1h ago",
+          likes: 3
+        },
+        {
+          id: 2,
+          author: {
+            name: "Emma Wilson",
+            username: "@emmaw",
+            avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "Can't wait to try it out! When will it be available?",
+          timestamp: "45m ago",
+          likes: 1
+        }
+      ],
       timestamp: "2h ago",
-      liked: false
+      liked: false,
+      shares: 5
     },
     {
       id: 2,
@@ -29,18 +53,38 @@ const MainFeature = () => {
       content: "Beautiful sunset from my evening walk. Nature never fails to inspire! 🌅",
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop",
       likes: 156,
-      comments: 23,
+      comments: [
+        {
+          id: 3,
+          author: {
+            name: "Sarah Chen",
+            username: "@sarahc",
+            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+          },
+          content: "Absolutely stunning! Where was this taken?",
+          timestamp: "2h ago",
+          likes: 8
+        }
+      ],
       timestamp: "4h ago",
-      liked: true
+      liked: true,
+      shares: 12
     }
   ])
+
 
   const [newPost, setNewPost] = useState("")
   const [selectedImage, setSelectedImage] = useState(null)
   const [imagePreview, setImagePreview] = useState("")
   const [isPosting, setIsPosting] = useState(false)
   const [activeTab, setActiveTab] = useState("feed")
-  const fileInputRef = useRef(null)
+  const [showComments, setShowComments] = useState({})
+  const [newComment, setNewComment] = useState({})
+  const [isCommenting, setIsCommenting] = useState({})
+  const [showShareDialog, setShowShareDialog] = useState({})
+  const [isLiking, setIsLiking] = useState({})
+  const [isSharing, setIsSharing] = useState({})
+
 
   const sampleImages = [
     "https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=500&h=300&fit=crop",
@@ -94,7 +138,15 @@ const MainFeature = () => {
     }, 1500)
   }
 
-  const handleLike = (postId) => {
+  const handleLike = async (postId) => {
+    if (isLiking[postId]) return
+    
+    setIsLiking(prev => ({ ...prev, [postId]: true }))
+    
+    // Optimistic update
+    const post = posts.find(p => p.id === postId)
+    const wasLiked = post.liked
+    
     setPosts(posts.map(post => 
       post.id === postId 
         ? { 
@@ -105,24 +157,140 @@ const MainFeature = () => {
         : post
     ))
     
+    // Simulate API call
+    setTimeout(() => {
+      setIsLiking(prev => ({ ...prev, [postId]: false }))
+      if (!wasLiked) {
+        toast.success("Post liked! ❤️")
+      } else {
+        toast.info("Like removed")
+      }
+    }, 500)
+  }
+
+  const toggleComments = (postId) => {
+    setShowComments(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }))
+  }
+
+  const handleCommentChange = (postId, value) => {
+    setNewComment(prev => ({
+      ...prev,
+      [postId]: value
+    }))
+  }
+
+  const handleAddComment = async (postId) => {
+    const commentText = newComment[postId]?.trim()
+    if (!commentText || isCommenting[postId]) return
+
+    setIsCommenting(prev => ({ ...prev, [postId]: true }))
+
+    const comment = {
+      id: Date.now(),
+      author: {
+        name: "You",
+        username: "@you",
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face"
+      },
+      content: commentText,
+      timestamp: "now",
+      likes: 0
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { 
+              ...post, 
+              comments: [...post.comments, comment]
+            }
+          : post
+      ))
+      
+      setNewComment(prev => ({ ...prev, [postId]: "" }))
+      setIsCommenting(prev => ({ ...prev, [postId]: false }))
+      toast.success("Comment added successfully!")
+    }, 800)
+  }
+
+  const handleLikeComment = (postId, commentId) => {
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? {
+            ...post,
+            comments: post.comments.map(comment =>
+              comment.id === commentId
+                ? { ...comment, likes: comment.likes + 1 }
+                : comment
+            )
+          }
+        : post
+    ))
+    toast.success("Comment liked!")
+  }
+
+  const toggleShareDialog = (postId) => {
+    setShowShareDialog(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }))
+  }
+
+  const handleShare = async (postId, platform = 'general') => {
+    if (isSharing[postId]) return
+    
+    setIsSharing(prev => ({ ...prev, [postId]: true }))
+    
     const post = posts.find(p => p.id === postId)
-    if (!post.liked) {
-      toast.success("Post liked! ❤️")
+    const shareUrl = `${window.location.origin}/post/${postId}`
+    const shareText = `Check out this post by ${post.author.name}: "${post.content.substring(0, 100)}..."`
+    
+    try {
+      switch (platform) {
+        case 'copy':
+          await navigator.clipboard.writeText(shareUrl)
+          toast.success("Link copied to clipboard!")
+          break
+        case 'facebook':
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank')
+          toast.success("Opening Facebook...")
+          break
+        case 'twitter':
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank')
+          toast.success("Opening Twitter...")
+          break
+        case 'whatsapp':
+          window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank')
+          toast.success("Opening WhatsApp...")
+          break
+        case 'email':
+          window.open(`mailto:?subject=${encodeURIComponent('Check out this post')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`, '_blank')
+          toast.success("Opening email client...")
+          break
+        default:
+          // General share - increment counter
+          setPosts(posts.map(p => 
+            p.id === postId 
+              ? { ...p, shares: (p.shares || 0) + 1 }
+              : p
+          ))
+          toast.success("Post shared!")
+      }
+      
+      setShowShareDialog(prev => ({ ...prev, [postId]: false }))
+    } catch (error) {
+      toast.error("Failed to share post")
+    } finally {
+      setTimeout(() => {
+        setIsSharing(prev => ({ ...prev, [postId]: false }))
+      }, 500)
     }
   }
 
-  const handleComment = (postId) => {
-    toast.info("Comment feature coming soon!")
-  }
-
-  const handleShare = (postId) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, shares: (post.shares || 0) + 1 }
-        : post
-    ))
-    toast.success("Post shared!")
-  }
 
   return (
     <motion.div 
@@ -296,51 +464,231 @@ const MainFeature = () => {
                 )}
 
                 {/* Post Actions */}
-                <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-surface-200/50 dark:border-surface-700/50">
-                  <div className="flex items-center space-x-4 sm:space-x-6">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => handleLike(post.id)}
-                      className={`flex items-center space-x-2 p-2 sm:p-3 rounded-xl transition-all duration-200 ${
-                        post.liked
-                          ? "text-red-500 bg-red-50 dark:bg-red-500/10"
-                          : "text-surface-600 dark:text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
-                      }`}
-                    >
-                      <ApperIcon name={post.liked ? "Heart" : "Heart"} className="w-4 h-4 sm:w-5 sm:h-5" fill={post.liked ? "currentColor" : "none"} />
-                      <span className="text-xs sm:text-sm font-medium">{post.likes}</span>
-                    </motion.button>
+                <div className="pt-4 sm:pt-6 border-t border-surface-200/50 dark:border-surface-700/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-4 sm:space-x-6">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleLike(post.id)}
+                        disabled={isLiking[post.id]}
+                        className={`flex items-center space-x-2 p-2 sm:p-3 rounded-xl transition-all duration-200 ${
+                          post.liked
+                            ? "text-red-500 bg-red-50 dark:bg-red-500/10"
+                            : "text-surface-600 dark:text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                        } ${isLiking[post.id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {isLiking[post.id] ? (
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ApperIcon name="Heart" className="w-4 h-4 sm:w-5 sm:h-5" fill={post.liked ? "currentColor" : "none"} />
+                        )}
+                        <span className="text-xs sm:text-sm font-medium">{post.likes}</span>
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleComments(post.id)}
+                        className="flex items-center space-x-2 p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all duration-200"
+                      >
+                        <ApperIcon name="MessageCircle" className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-xs sm:text-sm font-medium">{post.comments.length}</span>
+                      </motion.button>
+
+                      <div className="relative">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => toggleShareDialog(post.id)}
+                          disabled={isSharing[post.id]}
+                          className={`flex items-center space-x-2 p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 transition-all duration-200 ${
+                            isSharing[post.id] ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        >
+                          {isSharing[post.id] ? (
+                            <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <ApperIcon name="Share" className="w-4 h-4 sm:w-5 sm:h-5" />
+                          )}
+                          <span className="text-xs sm:text-sm font-medium">{post.shares || 0}</span>
+                        </motion.button>
+
+                        {/* Share Dialog */}
+                        <AnimatePresence>
+                          {showShareDialog[post.id] && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                              className="absolute bottom-full left-0 mb-2 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl shadow-float p-3 z-50 min-w-[200px]"
+                            >
+                              <div className="text-xs font-medium text-surface-600 dark:text-surface-400 mb-2 px-2">
+                                Share this post
+                              </div>
+                              <div className="space-y-1">
+                                <button
+                                  onClick={() => handleShare(post.id, 'copy')}
+                                  className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                                >
+                                  <ApperIcon name="Copy" className="w-4 h-4 text-surface-500" />
+                                  <span className="text-sm text-surface-700 dark:text-surface-300">Copy link</span>
+                                </button>
+                                <button
+                                  onClick={() => handleShare(post.id, 'facebook')}
+                                  className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                                >
+                                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs font-bold">f</span>
+                                  </div>
+                                  <span className="text-sm text-surface-700 dark:text-surface-300">Facebook</span>
+                                </button>
+                                <button
+                                  onClick={() => handleShare(post.id, 'twitter')}
+                                  className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                                >
+                                  <div className="w-4 h-4 bg-blue-400 rounded-full flex items-center justify-center">
+                                    <ApperIcon name="Twitter" className="w-3 h-3 text-white" />
+                                  </div>
+                                  <span className="text-sm text-surface-700 dark:text-surface-300">Twitter</span>
+                                </button>
+                                <button
+                                  onClick={() => handleShare(post.id, 'whatsapp')}
+                                  className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                                >
+                                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                    <ApperIcon name="Phone" className="w-3 h-3 text-white" />
+                                  </div>
+                                  <span className="text-sm text-surface-700 dark:text-surface-300">WhatsApp</span>
+                                </button>
+                                <button
+                                  onClick={() => handleShare(post.id, 'email')}
+                                  className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                                >
+                                  <ApperIcon name="Mail" className="w-4 h-4 text-surface-500" />
+                                  <span className="text-sm text-surface-700 dark:text-surface-300">Email</span>
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
 
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleComment(post.id)}
-                      className="flex items-center space-x-2 p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all duration-200"
+                      className="p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
                     >
-                      <ApperIcon name="MessageCircle" className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span className="text-xs sm:text-sm font-medium">{post.comments}</span>
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => handleShare(post.id)}
-                      className="flex items-center space-x-2 p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 transition-all duration-200"
-                    >
-                      <ApperIcon name="Share" className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span className="text-xs sm:text-sm font-medium">{post.shares || 0}</span>
+                      <ApperIcon name="Bookmark" className="w-4 h-4 sm:w-5 sm:h-5" />
                     </motion.button>
                   </div>
 
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-2 sm:p-3 rounded-xl text-surface-600 dark:text-surface-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
-                  >
-                    <ApperIcon name="Bookmark" className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </motion.button>
+                  {/* Comments Section */}
+                  <AnimatePresence>
+                    {showComments[post.id] && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="border-t border-surface-200/50 dark:border-surface-700/50 pt-4"
+                      >
+                        {/* Comment Input */}
+                        <div className="flex items-start space-x-3 mb-4">
+                          <img
+                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face"
+                            alt="Your avatar"
+                            className="w-8 h-8 rounded-lg object-cover shadow-sm"
+                          />
+                          <div className="flex-1">
+                            <div className="relative">
+                              <textarea
+                                value={newComment[post.id] || ""}
+                                onChange={(e) => handleCommentChange(post.id, e.target.value)}
+                                placeholder="Write a comment..."
+                                className="w-full p-3 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm resize-none transition-all duration-300"
+                                rows="2"
+                                maxLength="500"
+                              />
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-xs text-surface-400 dark:text-surface-500">
+                                  {(newComment[post.id] || "").length}/500
+                                </span>
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => handleAddComment(post.id)}
+                                  disabled={!newComment[post.id]?.trim() || isCommenting[post.id]}
+                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+                                    !newComment[post.id]?.trim() || isCommenting[post.id]
+                                      ? "bg-surface-200 dark:bg-surface-700 text-surface-400 dark:text-surface-500 cursor-not-allowed"
+                                      : "bg-primary hover:bg-primary-dark text-white shadow-sm hover:shadow-md"
+                                  }`}
+                                >
+                                  {isCommenting[post.id] && (
+                                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                  )}
+                                  <span>{isCommenting[post.id] ? "Posting..." : "Comment"}</span>
+                                </motion.button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Comments List */}
+                        <div className="space-y-3">
+                          {post.comments.map((comment) => (
+                            <motion.div
+                              key={comment.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="flex items-start space-x-3"
+                            >
+                              <img
+                                src={comment.author.avatar}
+                                alt={comment.author.name}
+                                className="w-8 h-8 rounded-lg object-cover shadow-sm"
+                              />
+                              <div className="flex-1">
+                                <div className="bg-surface-50 dark:bg-surface-900 rounded-xl p-3">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <span className="font-medium text-sm text-surface-900 dark:text-white">
+                                      {comment.author.name}
+                                    </span>
+                                    <span className="text-xs text-surface-500 dark:text-surface-400">
+                                      {comment.author.username}
+                                    </span>
+                                    <span className="text-xs text-surface-400 dark:text-surface-500">•</span>
+                                    <span className="text-xs text-surface-400 dark:text-surface-500">
+                                      {comment.timestamp}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
+                                    {comment.content}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-4 mt-2 pl-3">
+                                  <button
+                                    onClick={() => handleLikeComment(post.id, comment.id)}
+                                    className="flex items-center space-x-1 text-xs text-surface-500 dark:text-surface-400 hover:text-red-500 transition-colors duration-200"
+                                  >
+                                    <ApperIcon name="Heart" className="w-3 h-3" />
+                                    <span>{comment.likes}</span>
+                                  </button>
+                                  <button className="text-xs text-surface-500 dark:text-surface-400 hover:text-primary transition-colors duration-200">
+                                    Reply
+                                  </button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
+
               </motion.div>
             ))}
 

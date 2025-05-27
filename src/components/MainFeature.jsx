@@ -502,7 +502,7 @@ const MainFeature = () => {
           >
             {posts.filter(post => !hiddenPosts.has(post.id)).map((post) => (
 
-            {posts.map((post) => (
+
               <motion.div
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -510,7 +510,6 @@ const MainFeature = () => {
                 transition={{ duration: 0.5 }}
                 className="bg-white/70 dark:bg-surface-800/70 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-card hover:shadow-float transition-all duration-300 border border-surface-200/50 dark:border-surface-700/50"
               >
-                {/* Post Header */}
                 {/* Post Header */}
                 <div className="flex items-center space-x-4 mb-4 sm:mb-6">
                   <img
@@ -605,10 +604,6 @@ const MainFeature = () => {
                   </div>
                 </div>
 
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
 
 
                 {/* Post Content */}

@@ -460,13 +460,11 @@ const MainFeature = () => {
     setShowOptionsMenu(prev => ({ ...prev, [userId]: false }))
   }
 
-
-
-
   const handleHidePost = (postId) => {
     setHiddenPosts(prev => new Set(prev).add(postId))
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
+  
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMorePosts) return
     
@@ -496,10 +494,7 @@ const MainFeature = () => {
     }
   }
 
-
-
-
-
+  return (
 
 
     <motion.div 
@@ -1017,8 +1012,9 @@ const MainFeature = () => {
                   <ApperIcon name="ChevronDown" className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </motion.button>
-          </motion.div>
             </motion.div>
+          </motion.div>
+
 
         )}
       </AnimatePresence>

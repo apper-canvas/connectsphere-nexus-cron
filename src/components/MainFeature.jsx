@@ -297,6 +297,7 @@ const MainFeature = () => {
         setIsSharing(prev => ({ ...prev, [postId]: false }))
       }, 500)
     }
+  }
 
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`)
@@ -334,7 +335,6 @@ const MainFeature = () => {
   }
 
 
-  }
 
 
   return (

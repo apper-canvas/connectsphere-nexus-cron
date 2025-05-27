@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom'
+
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -24,6 +26,8 @@ const Messages = () => {
   const [messageReactions, setMessageReactions] = useState({})
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
+  const location = useLocation()
+
   const typingTimeoutRef = useRef(null)
 
   // Mock current user
@@ -198,6 +202,46 @@ const Messages = () => {
     setUnreadCounts({ conv1: 1, conv3: 2 })
     setOnlineUsers(new Set(['user2', 'user4']))
 
+    // Check for user parameter from profile navigation
+    const urlParams = new URLSearchParams(location.search)
+    const targetUserId = urlParams.get('user')
+    
+    if (targetUserId) {
+      // Find existing conversation with this user
+      const existingConv = mockConversations.find(conv => 
+        conv.type === 'direct' && 
+        conv.participants.includes(targetUserId) && 
+        conv.participants.includes(currentUser.id)
+      )
+      
+      if (existingConv) {
+        setSelectedConversation(existingConv)
+        setUnreadCounts(prev => ({ ...prev, [existingConv.id]: 0 }))
+        toast.success(`Opened conversation with ${existingConv.name}`)
+      } else {
+        // Create new conversation with the target user
+        const targetUser = mockUsers.find(u => u.id === targetUserId)
+        if (targetUser) {
+          const newConversation = {
+            id: `conv_${Date.now()}`,
+            type: 'direct',
+            participants: [currentUser.id, targetUserId],
+            name: targetUser.name,
+            avatar: targetUser.avatar,
+            lastMessage: null,
+            status: targetUser.status || 'offline'
+          }
+          
+          setConversations(prev => [newConversation, ...prev])
+          setMessages(prev => ({ ...prev, [newConversation.id]: [] }))
+          setSelectedConversation(newConversation)
+          toast.success(`Started new conversation with ${targetUser.name}`)
+        } else {
+          toast.error('User not found')
+        }
+      }
+    }
+
     // Initialize Socket.IO connection (simulated)
     const newSocket = {
       connected: true,
@@ -221,7 +265,9 @@ const Messages = () => {
     
     setSocket(newSocket)
     setIsConnected(true)
-    toast.success('Connected to messaging service')
+    if (!targetUserId) {
+      toast.success('Connected to messaging service')
+    }
 
     // Simulate receiving messages
     const interval = setInterval(() => {
@@ -236,7 +282,8 @@ const Messages = () => {
         newSocket.disconnect()
       }
     }
-  }, [])
+  }, [location.search])
+
 
   useEffect(() => {
     if (darkMode) {

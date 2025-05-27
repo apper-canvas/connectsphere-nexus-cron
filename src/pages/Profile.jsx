@@ -134,8 +134,10 @@ const Profile = () => {
   }
 
   const handleMessage = () => {
-    toast.success(`Opening conversation with ${user.name}...`)
+    // Navigate to messages page with this user
+    navigate(`/messages?user=${userId}`)
   }
+
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href)

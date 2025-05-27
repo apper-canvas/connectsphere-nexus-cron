@@ -121,11 +121,15 @@ const Home = () => {
   }
 
   const handleUserSelect = (user) => {
-    navigate(`/profile/${user.id}`)
-    setSearchQuery('')
+    // Immediately close dropdown and reset search state
     setShowSearchResults(false)
+    setSearchQuery('')
     setHighlightedIndex(-1)
+    
+    // Navigate to user profile
+    navigate(`/profile/${user.id}`)
   }
+
 
 
   const handleAdvancedSearch = () => {

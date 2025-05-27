@@ -302,9 +302,12 @@ const MainFeature = () => {
     ))
     
     // Simulate API call
+    // Simulate API call
     setTimeout(() => {
       setIsLiking(prev => ({ ...prev, [postId]: false }))
+    }, 500)
   }
+
 
   const toggleComments = (postId) => {
     setShowComments(prev => ({
@@ -349,8 +352,11 @@ const MainFeature = () => {
           : post
       ))
       
-      
+      setNewComment(prev => ({ ...prev, [postId]: '' }))
+      setIsCommenting(prev => ({ ...prev, [postId]: false }))
+    }, 1000)
   }
+
 
   const handleLikeComment = (postId, commentId) => {
     setPosts(posts.map(post => 
@@ -387,6 +393,14 @@ const MainFeature = () => {
       switch (platform) {
         case 'copy':
           await navigator.clipboard.writeText(shareUrl)
+          break
+        case 'facebook':
+        case 'twitter':
+        case 'whatsapp':
+        case 'email':
+        default:
+          break
+      }
       
       setShowShareDialog(prev => ({ ...prev, [postId]: false }))
     } catch (error) {
@@ -397,6 +411,7 @@ const MainFeature = () => {
       }, 500)
     }
   }
+
 
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`)
@@ -430,17 +445,21 @@ const MainFeature = () => {
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
 
-  const handleFollowUser = (userId, userName) => {
     const isCurrentlyFollowed = followedUsers.has(userId)
     
     setFollowedUsers(prev => {
       const newSet = new Set(prev)
       if (isCurrentlyFollowed) {
         newSet.delete(userId)
+      } else {
+        newSet.add(userId)
+      }
+      return newSet
     })
     
     setShowOptionsMenu(prev => ({ ...prev, [userId]: false }))
   }
+
 
   const handleHidePost = (postId) => {
     setHiddenPosts(prev => new Set(prev).add(postId))

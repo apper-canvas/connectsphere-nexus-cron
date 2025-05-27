@@ -12,6 +12,12 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [notifications, setNotifications] = useState([
+    { id: 1, type: 'like', user: 'Alice Wonder', content: 'liked your post', read: false },
+    { id: 2, type: 'comment', user: 'Bob Creator', content: 'commented on your post', read: false },
+    { id: 3, type: 'follow', user: 'Charlie Dev', content: 'started following you', read: true }
+  ])
+
   const navigate = useNavigate()
 
   // Mock users data for search suggestions
@@ -79,6 +85,9 @@ const Home = () => {
       {/* Background Elements */}
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  const unreadNotifications = notifications.filter(n => !n.read).length
+
+
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl animate-float"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-secondary/10 rounded-full blur-xl animate-pulse-soft"></div>
         <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-accent/10 rounded-full blur-xl animate-bounce-gentle"></div>
@@ -208,9 +217,22 @@ const Home = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 sm:p-3 rounded-xl bg-primary hover:bg-primary-dark transition-all duration-300 shadow-glow"
+                onClick={() => navigate('/notifications')}
+                className="relative p-2 sm:p-3 rounded-xl bg-primary hover:bg-primary-dark transition-all duration-300 shadow-glow"
+                title="Notifications"
               >
                 <ApperIcon name="Bell" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                {unreadNotifications > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 border-2 border-white dark:border-surface-900 rounded-full flex items-center justify-center"
+                  >
+                    <span className="text-xs font-bold text-white">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </span>
+                  </motion.div>
+                )}
               </motion.button>
             </div>
 

@@ -173,6 +173,14 @@ const MainFeature = () => {
     // Simulate API call
     setTimeout(() => {
       setIsLiking(prev => ({ ...prev, [postId]: false }))
+      // Create notification for post author
+      if (!wasLiked) {
+        // Simulate creating a notification (in real app, this would be an API call)
+        setTimeout(() => {
+          toast.info('Notification sent to post author about your like!')
+        }, 1000)
+      }
+
       if (!wasLiked) {
         toast.success("Post liked! ❤️")
       } else {
@@ -224,6 +232,12 @@ const MainFeature = () => {
           : post
       ))
       
+      
+      // Create notification for post author about new comment
+      setTimeout(() => {
+        toast.info('Notification sent to post author about your comment!')
+      }, 1200)
+
       setNewComment(prev => ({ ...prev, [postId]: "" }))
       setIsCommenting(prev => ({ ...prev, [postId]: false }))
       toast.success("Comment added successfully!")

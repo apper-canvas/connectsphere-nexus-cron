@@ -7,6 +7,8 @@ import Profile from './pages/Profile'
 import Follow from './pages/Follow'
 
 import Search from './pages/Search'
+import Notifications from './pages/Notifications'
+
 import Messages from './pages/Messages'
 
 
@@ -22,6 +24,8 @@ function App() {
         <Route path="/follow" element={<Follow />} />
 
         <Route path="/search" element={<Search />} />
+        <Route path="/notifications" element={<Notifications />} />
+
         <Route path="/messages" element={<Messages />} />
 
 

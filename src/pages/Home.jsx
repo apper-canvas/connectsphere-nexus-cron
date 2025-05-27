@@ -230,12 +230,11 @@ const Home = () => {
             className="text-center mb-8 sm:mb-12 lg:mb-16"
           >
             <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-surface-900 dark:text-white mb-4 sm:mb-6">
-              Connect, Share, 
-              <span className="text-gradient block sm:inline"> Discover</span>
+              <span className="text-gradient block sm:inline"></span>
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto leading-relaxed">
-              Join millions of people sharing moments, building communities, and discovering new connections in our vibrant social platform.
             </p>
+
           </motion.div>
 
           {/* Main Feature */}

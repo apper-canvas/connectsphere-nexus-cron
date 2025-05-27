@@ -104,6 +104,7 @@
 
 .pulse-ring {
   animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
 
 /* Chat-specific styles */
 .chat-message {
@@ -184,6 +185,4 @@
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
-}
-
 }

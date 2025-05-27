@@ -183,6 +183,17 @@ const Home = () => {
                 />
               </motion.button>
               
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/follow')}
+                className="p-2 sm:p-3 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all duration-300 shadow-card"
+                title="Follow Users"
+              >
+                <ApperIcon name="UserPlus" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-600 dark:text-surface-400" />
+              </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

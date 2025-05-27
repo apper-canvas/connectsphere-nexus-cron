@@ -85,6 +85,8 @@ const MainFeature = () => {
   const [isLiking, setIsLiking] = useState({})
   const [isSharing, setIsSharing] = useState({})
 
+  const fileInputRef = useRef(null)
+
 
   const sampleImages = [
     "https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=500&h=300&fit=crop",

@@ -7,6 +7,8 @@ import Profile from './pages/Profile'
 import Follow from './pages/Follow'
 
 import Search from './pages/Search'
+import Messages from './pages/Messages'
+
 
 import NotFound from './pages/NotFound'
 
@@ -20,6 +22,8 @@ function App() {
         <Route path="/follow" element={<Follow />} />
 
         <Route path="/search" element={<Search />} />
+        <Route path="/messages" element={<Messages />} />
+
 
       </Routes>
       <ToastContainer

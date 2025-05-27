@@ -68,6 +68,10 @@ export default {
         'slide-up': 'slideUp 0.3s ease-out',
         'bounce-gentle': 'bounceGentle 2s infinite',
         'pulse-soft': 'pulseSoft 2s infinite'
+        'chat-bubble': 'chatBubble 0.3s ease-out',
+        'typing-dots': 'typingDots 1.4s infinite ease-in-out',
+        'message-slide': 'messageSlide 0.4s ease-out',
+
       },
       keyframes: {
         fadeIn: {
@@ -86,6 +90,19 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.8' }
         }
+        chatBubble: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        },
+        typingDots: {
+          '0%, 60%, 100%': { transform: 'translateY(0)' },
+          '30%': { transform: 'translateY(-10px)' }
+        },
+        messageSlide: {
+          '0%': { transform: 'translateX(-20px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' }
+        }
+
       }
     },
   },

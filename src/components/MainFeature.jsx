@@ -444,7 +444,7 @@ const MainFeature = () => {
   const handleSavePost = (postId) => {
     setShowOptionsMenu(prev => ({ ...prev, [postId]: false }))
   }
-
+  const handleFollowUser = (userId, userName) => {
     const isCurrentlyFollowed = followedUsers.has(userId)
     
     setFollowedUsers(prev => {
@@ -459,6 +459,8 @@ const MainFeature = () => {
     
     setShowOptionsMenu(prev => ({ ...prev, [userId]: false }))
   }
+
+
 
 
   const handleHidePost = (postId) => {
@@ -500,7 +502,6 @@ const MainFeature = () => {
 
 
 
-  return (
     <motion.div 
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}

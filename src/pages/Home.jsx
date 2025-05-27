@@ -1,17 +1,18 @@
 import { useNavigate } from 'react-router-dom'
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import MainFeature from '../components/MainFeature'
 import { toast } from 'react-toastify'
-
 import ApperIcon from '../components/ApperIcon'
+
 
 const Home = () => {
   const [darkMode, setDarkMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const searchRef = useRef(null)
   const [notifications, setNotifications] = useState([
     { id: 1, type: 'like', user: 'Alice Wonder', content: 'liked your post', read: false },
     { id: 2, type: 'comment', user: 'Bob Creator', content: 'commented on your post', read: false },
@@ -38,7 +39,22 @@ const Home = () => {
     } else {
       document.documentElement.classList.remove('dark')
     }
-  }, [darkMode])
+
+  // Handle clicks outside search to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false)
+        setHighlightedIndex(-1)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
@@ -48,6 +64,7 @@ const Home = () => {
   const handleSearchChange = (e) => {
     const query = e.target.value
     setSearchQuery(query)
+    setHighlightedIndex(-1)
     
     if (query.trim()) {
       const filtered = mockUsers.filter(user => 
@@ -63,6 +80,36 @@ const Home = () => {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (!showSearchResults) return
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setHighlightedIndex(prev => 
+          prev < searchResults.length - 1 ? prev + 1 : prev
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setHighlightedIndex(prev => prev > 0 ? prev - 1 : -1)
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (highlightedIndex >= 0 && highlightedIndex < searchResults.length) {
+          handleUserSelect(searchResults[highlightedIndex])
+        } else if (searchQuery.trim()) {
+          handleSearchSubmit(e)
+        }
+        break
+      case 'Escape':
+        setShowSearchResults(false)
+        setHighlightedIndex(-1)
+        break
+    }
+  }
+
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
@@ -72,15 +119,20 @@ const Home = () => {
   }
 
   const handleUserSelect = (user) => {
-    toast.success(`Viewing ${user.name}'s profile`)
+    navigate(`/profile/${user.id}`)
     setSearchQuery('')
     setShowSearchResults(false)
+    setHighlightedIndex(-1)
   }
+
 
   const handleAdvancedSearch = () => {
     navigate('/search')
+    setSearchQuery('')
     setShowSearchResults(false)
+    setHighlightedIndex(-1)
   }
+
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -112,7 +164,7 @@ const Home = () => {
               </div>
             </div>
             {/* Search Bar */}
-            <div className="flex-1 max-w-md mx-4 relative">
+            <div className="flex-1 max-w-md mx-4 relative" ref={searchRef}>
               <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative">
                   <ApperIcon 
@@ -123,6 +175,12 @@ const Home = () => {
                     type="text"
                     value={searchQuery}
                     onChange={handleSearchChange}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => {
+                      if (searchResults.length > 0) {
+                        setShowSearchResults(true)
+                      }
+                    }}
                     placeholder="Search users, posts, groups..."
                     className="w-full pl-10 pr-12 py-2 sm:py-3 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm transition-all duration-300"
                   />
@@ -137,6 +195,7 @@ const Home = () => {
                 </div>
               </form>
 
+
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
                 <motion.div
@@ -149,11 +208,16 @@ const Home = () => {
                     <div className="text-xs font-medium text-surface-500 dark:text-surface-400 px-3 py-2 border-b border-surface-100 dark:border-surface-700">
                       Users ({searchResults.length})
                     </div>
-                    {searchResults.map((user) => (
+                    {searchResults.map((user, index) => (
                       <button
                         key={user.id}
                         onClick={() => handleUserSelect(user)}
-                        className="w-full flex items-center space-x-3 p-3 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200 text-left ${
+                          index === highlightedIndex
+                            ? 'bg-primary/10 dark:bg-primary/20'
+                            : 'hover:bg-surface-50 dark:hover:bg-surface-700'
+                        }`}
                       >
                         <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-medium">
                           {user.avatar}
@@ -177,6 +241,8 @@ const Home = () => {
                   </div>
                 </motion.div>
               )}
+            </div>
+
             </div>
             
             <div className="flex items-center space-x-2 sm:space-x-4">

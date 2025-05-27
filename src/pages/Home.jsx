@@ -39,6 +39,7 @@ const Home = () => {
     } else {
       document.documentElement.classList.remove('dark')
     }
+  }, [darkMode])
 
   // Handle clicks outside search to close dropdown
   useEffect(() => {
@@ -54,6 +55,7 @@ const Home = () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
 
 
   const toggleDarkMode = () => {
@@ -243,7 +245,8 @@ const Home = () => {
               )}
             </div>
 
-            </div>
+            {/* Navigation Buttons */}
+
             
             <div className="flex items-center space-x-2 sm:space-x-4">
               <motion.button

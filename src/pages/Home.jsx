@@ -238,98 +238,9 @@ const Home = () => {
             </p>
           </motion.div>
 
-          {/* Stats Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 lg:mb-16"
-          >
-            {[
-              { icon: "Users", label: "Active Users", value: "2.5M+" },
-              { icon: "MessageCircle", label: "Messages", value: "180M+" },
-              { icon: "Image", label: "Posts Shared", value: "50M+" },
-              { icon: "Heart", label: "Connections", value: "1B+" }
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-                className="bg-white/60 dark:bg-surface-800/60 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-card hover:shadow-float transition-all duration-300 border border-surface-200/50 dark:border-surface-700/50"
-              >
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-secondary rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-glow">
-                  <ApperIcon name={stat.icon} className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-surface-900 dark:text-white mb-1 sm:mb-2">{stat.value}</h3>
-                <p className="text-xs sm:text-sm text-surface-600 dark:text-surface-400">{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
           {/* Main Feature */}
           <MainFeature />
 
-          {/* Features Grid */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="mt-12 sm:mt-16 lg:mt-20"
-          >
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-surface-900 dark:text-white mb-8 sm:mb-12">
-              Why Choose ConnectSphere?
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {[
-                {
-                  icon: "Shield",
-                  title: "Privacy First",
-                  description: "Your data is protected with end-to-end encryption and advanced privacy controls."
-                },
-                {
-                  icon: "Zap",
-                  title: "Real-time Updates",
-                  description: "Stay connected with instant notifications and real-time messaging."
-                },
-                {
-                  icon: "Sparkles",
-                  title: "Smart Discovery",
-                  description: "Find like-minded people and communities with our intelligent recommendation system."
-                },
-                {
-                  icon: "Palette",
-                  title: "Rich Media",
-                  description: "Share photos, videos, and stories with powerful editing tools."
-                },
-                {
-                  icon: "Users",
-                  title: "Communities",
-                  description: "Join groups and communities based on your interests and passions."
-                },
-                {
-                  icon: "Smartphone",
-                  title: "Mobile Optimized",
-                  description: "Seamless experience across all devices with our responsive design."
-                }
-              ].map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                  className="group bg-white/70 dark:bg-surface-800/70 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-card hover:shadow-float transition-all duration-300 border border-surface-200/50 dark:border-surface-700/50 hover:border-primary/30"
-                >
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-primary to-secondary rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-glow group-hover:scale-110 transition-transform duration-300">
-                    <ApperIcon name={feature.icon} className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-                  </div>
-                  <h4 className="text-lg sm:text-xl font-semibold text-surface-900 dark:text-white mb-2 sm:mb-3">{feature.title}</h4>
-                  <p className="text-sm sm:text-base text-surface-600 dark:text-surface-300 leading-relaxed">{feature.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </main>
 

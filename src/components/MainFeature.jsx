@@ -89,6 +89,8 @@ const MainFeature = () => {
   const [isLiking, setIsLiking] = useState({})
   const [isSharing, setIsSharing] = useState({})
 
+  const currentUser = { username: '@you', name: 'You' } // Simulated current user
+
   const navigate = useNavigate()
 
   const fileInputRef = useRef(null)
@@ -507,34 +509,43 @@ const MainFeature = () => {
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
                         className="absolute top-full right-0 mt-2 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl shadow-float p-2 z-50 min-w-[160px]"
                       >
-                        <button
-                          onClick={() => handleEditPost(post.id)}
-                          className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
-                        >
-                          <ApperIcon name="Edit" className="w-4 h-4 text-surface-500" />
-                          <span className="text-sm text-surface-700 dark:text-surface-300">Edit Post</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeletePost(post.id)}
-                          className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
-                        >
-                          <ApperIcon name="Trash2" className="w-4 h-4 text-red-500" />
-                          <span className="text-sm text-surface-700 dark:text-surface-300">Delete Post</span>
-                        </button>
-                        <button
-                          onClick={() => handleReportPost(post.id)}
-                          className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
-                        >
-                          <ApperIcon name="Flag" className="w-4 h-4 text-yellow-500" />
-                          <span className="text-sm text-surface-700 dark:text-surface-300">Report Post</span>
-                        </button>
-                        <button
-                          onClick={() => handleSavePost(post.id)}
-                          className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
-                        >
-                          <ApperIcon name="Bookmark" className="w-4 h-4 text-blue-500" />
-                          <span className="text-sm text-surface-700 dark:text-surface-300">Save Post</span>
-                        </button>
+                        {/* Conditional options based on post ownership */}
+                        {post.author.username === currentUser.username ? (
+                          <>
+                            <button
+                              onClick={() => handleEditPost(post.id)}
+                              className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                            >
+                              <ApperIcon name="Edit" className="w-4 h-4 text-surface-500" />
+                              <span className="text-sm text-surface-700 dark:text-surface-300">Edit Post</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                            >
+                              <ApperIcon name="Trash2" className="w-4 h-4 text-red-500" />
+                              <span className="text-sm text-surface-700 dark:text-surface-300">Delete Post</span>
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleReportPost(post.id)}
+                              className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                            >
+                              <ApperIcon name="Flag" className="w-4 h-4 text-yellow-500" />
+                              <span className="text-sm text-surface-700 dark:text-surface-300">Report Post</span>
+                            </button>
+                            <button
+                              onClick={() => handleSavePost(post.id)}
+                              className="w-full flex items-center space-x-3 p-2 hover:bg-surface-50 dark:hover:bg-surface-700 rounded-lg transition-colors duration-200 text-left"
+                            >
+                              <ApperIcon name="Bookmark" className="w-4 h-4 text-blue-500" />
+                              <span className="text-sm text-surface-700 dark:text-surface-300">Save Post</span>
+                            </button>
+                          </>
+                        )}
+
                       </motion.div>
                     )}
                   </div>

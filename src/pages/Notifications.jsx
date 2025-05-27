@@ -269,7 +269,6 @@ const Notifications = () => {
       setSelectedNotifications(new Set(currentNotifications.map(n => n.id)))
     }
   }
-
   const handleNotificationClick = (notification) => {
     // Mark as read if unread
     if (!notification.read) {
@@ -280,18 +279,32 @@ const Notifications = () => {
     switch (notification.type) {
       case 'like':
       case 'comment':
-        toast.info(`Viewing post: "${notification.post.excerpt}"`) 
+        // Navigate to the specific post
+        if (notification.post && notification.post.id) {
+          navigate(`/?postId=${notification.post.id}`)
+          toast.info(`Viewing post: "${notification.post.excerpt}"`)
+        } else {
+          toast.info(`Viewing post: "${notification.post.excerpt}"`)
+          navigate('/')
+        }
         break
       case 'follow':
-        navigate(`/profile/${notification.user.username}`)
+        // Navigate to the user's profile
+        const userId = notification.user.username.replace('@', '')
+        navigate(`/profile/${userId}`)
+        toast.info(`Viewing ${notification.user.name}'s profile`)
         break
       case 'message':
+        // Navigate to messages page
         navigate('/messages')
+        toast.info(`Opening messages from ${notification.user.name}`)
         break
       default:
+        toast.info('Opening notification details')
         break
     }
   }
+
 
   useEffect(() => {
     setShowBulkActions(selectedNotifications.size > 0)

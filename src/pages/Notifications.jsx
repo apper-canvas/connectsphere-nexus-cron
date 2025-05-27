@@ -331,32 +331,6 @@ const Notifications = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              {unreadCount > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleMarkAllAsRead}
-                  disabled={loading}
-                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl font-medium transition-all duration-300 shadow-glow disabled:opacity-50"
-                >
-                  {loading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    'Mark all read'
-                  )}
-                </motion.button>
-              )}
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowBulkActions(!showBulkActions)}
-                className="p-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all duration-300"
-              >
-                <ApperIcon name="MoreVertical" className="w-5 h-5 text-surface-600 dark:text-surface-400" />
-              </motion.button>
-            </div>
           </div>
         </div>
       </motion.header>

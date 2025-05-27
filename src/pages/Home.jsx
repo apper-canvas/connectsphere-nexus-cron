@@ -192,6 +192,8 @@ const Home = () => {
               </motion.button>
             </div>
 
+          </div>
+
         </div>
       </motion.header>
 

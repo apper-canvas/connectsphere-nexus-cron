@@ -145,12 +145,18 @@ const Follow = () => {
   const interests = ['tech', 'art', 'music', 'photography', 'travel', 'food', 'fitness', 'gaming', 'fashion', 'business', 'science', 'sports']
   
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    // Use requestAnimationFrame to ensure DOM manipulation happens after render
+    const timeoutId = setTimeout(() => {
+      if (darkMode) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    }, 0)
+    
+    return () => clearTimeout(timeoutId)
   }, [darkMode])
+
   
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
